@@ -13,10 +13,7 @@ coverage
 benchmarks/graphs
 
 # Sequelize
-config
-migrations
-seeders
-models
+
 
 
 # User-specific files

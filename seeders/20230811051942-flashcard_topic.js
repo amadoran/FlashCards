@@ -18,12 +18,12 @@ module.exports = {
 	     
       /* LA ESTRUCTURA DE LOS OBJETOS JSON (CLAVE-VALOR), DE ACUERDO CON EL MODELO RELACIONADO */
       {
-        flashcard_id: 1,
-        topic_id: 1
+        flashcard_id: 11,
+        topic_id: 11
       },
       {
-        flashcard_id: 2,
-        topic_id: 2
+        flashcard_id: 12,
+        topic_id: 12
       }
       ], {});
   },
