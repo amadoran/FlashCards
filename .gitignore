@@ -13,7 +13,7 @@ coverage
 benchmarks/graphs
 
 # Sequelize
-
+config/config.json
 
 
 # User-specific files
