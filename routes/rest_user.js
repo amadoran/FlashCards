@@ -5,6 +5,14 @@ var router = express.Router();
 const user = require("../models").user;
 
 router.get("/findAll/json", function (req, res, next) {
+     /* VERIFICADOR DE AUTORIZACIÓN */
+
+     const { rol } = req.user;
+
+     if (rol !== 'admin') {
+         return res.sendStatus(403);
+     }
+     
     /* MÉTODO ESTÁTICO findAll  */
 
     user.findAll({

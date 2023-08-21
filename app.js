@@ -5,6 +5,16 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 
+/* MÓDULO dotenv */
+const dotenv = require('dotenv');
+
+/* CARGA DE DATOS DE CONFIGURACION EN MEMORIA */
+dotenv.config();
+
+/* CARGA DEL MIDDLEWARE authenticateJWT */
+var authenticateJWT = require('./middleware/auth');
+
+
 var indexRouter = require('./routes/index');
 var userRouter = require('./routes/rest_user');
 var flashcardRouter = require('./routes/rest_flashcard');
@@ -26,7 +36,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/rest/user', userRouter);
+app.use('/rest/user', authenticateJWT, userRouter);
 app.use('/rest/flashcard', flashcardRouter);
 app.use('/rest/topic', topicRouter);
 app.use('/rest/flashcard_topic', flashcard_topicRouter);
