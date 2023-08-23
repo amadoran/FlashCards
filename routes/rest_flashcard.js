@@ -1,9 +1,10 @@
 var express = require("express");
 var router = express.Router();
+const { Op } = require("sequelize");
 
 /* IMPORTE El ARCHIVO CON EL NOMBRE_CLASE */
 const flashcard = require("../models").flashcard;
-const flashcard_topic = require("../models").flashcard_topic
+const flashcard_topic = require("../models").flashcard_topic;
 
 router.get("/findAll/json", function (req, res, next) {
     /* MÉTODO ESTÁTICO findAll  */
@@ -21,7 +22,8 @@ router.get("/findAll/json", function (req, res, next) {
 router.get("/findById/:id/json", function (req, res, next) {
     let id = req.params.id;
 
-    flashcard.findByPk(id)
+    flashcard
+        .findByPk(id)
         .then((instancia) => {
             if (instancia) {
                 res.status(200).json(instancia);
@@ -35,7 +37,8 @@ router.get("/findById/:id/json", function (req, res, next) {
 });
 
 router.post("/save", function (req, res, next) {
-    flashcard.create(req.body)
+    flashcard
+        .create(req.body)
         .then((instancia) => {
             res.status(201).json(instancia);
         })
@@ -47,7 +50,8 @@ router.post("/save", function (req, res, next) {
 router.put("/update/:id", function (req, res, next) {
     let id = req.params.id;
 
-    flashcard.findByPk(id)
+    flashcard
+        .findByPk(id)
         .then((instancia) => {
             if (instancia) {
                 instancia
@@ -72,7 +76,8 @@ router.put("/update/:id", function (req, res, next) {
 router.delete("/delete/:id", function (req, res, next) {
     let id = req.params.id;
 
-    flashcard.findByPk(id)
+    flashcard
+        .findByPk(id)
         .then((instancia) => {
             if (instancia) {
                 instancia
@@ -94,30 +99,34 @@ router.delete("/delete/:id", function (req, res, next) {
         .catch((error) => res.status(400).send(error));
 });
 
-router.get("/findCardByTopic/:id/json", function(req, res, next){
+router.get("/findCardByTopic/:id/json", function (req, res, next) {
     let id = req.params.id;
 
-    flashcard_topic.findAll({
-        attributes: { exclude: ["id", "updatedAt", "createAt"] },
-        where: { topic_id: id }
-    })
-    .then(resultado => {
-        let keys = resultado.map(element => element.flashcard_id);
+    flashcard_topic
+        .findAll({
+            attributes: { exclude: ["id", "updatedAt", "createAt"] },
+            where: { topic_id: id }
+        })
+        .then((resultado) => {
+            let keys = resultado.map((element) => element.flashcard_id);
 
-        flashcard.findAll({
-            attributes: { exclude: ["updateAt", "createdAt"] },
-            where: {
-                id: {
-                    [Op.or]: keys
-                }
-            }
+            flashcard
+                .findAll({
+                    attributes: { exclude: ["updateAt", "createdAt"] },
+                    where: {
+                        id: {
+                            [Op.or]: keys,
+                        },
+                    },
+                })
+                .then((resultado2) => {
+                    res.json(resultado2);
+                })
+                .catch((error) => res.status(400).send(error));
         })
-        .then(resultado => {
-            res.json(resultado);
-        })
-        .catch(error => res.status(400).send(error));
-    })
-    .catch(error => res.status(400).send(error));
+        .catch((error) => {
+            res.status(400).send(error);
+        });
 });
 
 module.exports = router;
