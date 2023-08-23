@@ -3,6 +3,7 @@ var router = express.Router();
 
 /* IMPORTE El ARCHIVO CON EL NOMBRE_CLASE */
 const flashcard = require("../models").flashcard;
+const flashcard_topic = require("../models").flashcard_topic
 
 router.get("/findAll/json", function (req, res, next) {
     /* MÉTODO ESTÁTICO findAll  */
@@ -91,6 +92,32 @@ router.delete("/delete/:id", function (req, res, next) {
             }
         })
         .catch((error) => res.status(400).send(error));
+});
+
+router.get("/findCardByTopic/:id/json", function(req, res, next){
+    let id = req.params.id;
+
+    flashcard_topic.findAll({
+        attributes: { exclude: ["id", "updatedAt", "createAt"] },
+        where: { topic_id: id }
+    })
+    .then(resultado => {
+        let keys = resultado.map(element => element.flashcard_id);
+
+        flashcard.findAll({
+            attributes: { exclude: ["updateAt", "createdAt"] },
+            where: {
+                id: {
+                    [Op.or]: keys
+                }
+            }
+        })
+        .then(resultado => {
+            res.json(resultado);
+        })
+        .catch(error => res.status(400).send(error));
+    })
+    .catch(error => res.status(400).send(error));
 });
 
 module.exports = router;
