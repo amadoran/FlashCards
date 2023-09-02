@@ -13,13 +13,17 @@ dotenv.config();
 
 /* CARGA DEL MIDDLEWARE authenticateJWT */
 var authenticateJWT = require('./middleware/auth');
-
+/* REFERENCIA AL MÓDULO */
+const swaggerUi = require('swagger-ui-express')
 
 var indexRouter = require('./routes/index');
 var userRouter = require('./routes/rest_user');
 var flashcardRouter = require('./routes/rest_flashcard');
 var topicRouter = require('./routes/rest_topic');
 var flashcard_topicRouter = require('./routes/rest_flashcard_topic');
+
+/* REFERENCIA AL ARCHIVO GENERADO */
+const swaggerFile = require('./swagger_output.json')
 
 var app = express();
 
@@ -40,6 +44,8 @@ app.use('/rest/user', authenticateJWT, userRouter);
 app.use('/rest/flashcard', flashcardRouter);
 app.use('/rest/topic', topicRouter);
 app.use('/rest/flashcard_topic', flashcard_topicRouter);
+/* CONFIGURACIÓN DE LA RUTA A LA DOCUMENTACIÓN */
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
