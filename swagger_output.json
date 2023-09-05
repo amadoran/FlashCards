@@ -5,7 +5,7 @@
     "title": "REST API",
     "description": ""
   },
-  "host": "localhost:3000",
+  "host": "flashcards-production-215e.up.railway.app",
   "basePath": "/rest",
   "schemes": [
     "http"
