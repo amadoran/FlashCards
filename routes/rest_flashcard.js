@@ -80,7 +80,54 @@ router.delete("/delete/:id", function (req, res, next) {
         .findByPk(id)
         .then((instancia) => {
             if (instancia) {
-                instancia
+                flashcard_topic
+                    .findAll({
+                        attributes: { exclude: ["updatedAt", "createdAt"] },
+                        where: { flashcard_id: id },
+                    })
+                    .then((resultado) => {
+                        if (resultado) {
+                            if (resultado.length > 0) {
+                                deleteForeigns(resultado).then(() => {
+                                    instancia
+                                        .destroy()
+                                        .then(() => {
+                                            res.status(204).json({
+                                                mensaje: "Registro eliminado",
+                                            });
+                                        })
+                                        .catch((error) => {
+                                            res.status(500).json({
+                                                error: error,
+                                            });
+                                        });
+                                })
+                            } else{
+                                instancia
+                                    .destroy()
+                                    .then(() => {
+                                        res.status(204).json({
+                                            mensaje: "Registro eliminado",
+                                        });
+                                    })
+                                    .catch((error) => {
+                                        res.status(500).json({
+                                            error: error,
+                                        });
+                                    });
+                            }
+                        }
+                    });
+            } else {
+                res.status(404).json({
+                    error: "No existe registro con el identificador " + id,
+                });
+            }
+        })
+        .catch((error) => res.status(400).send(error));
+});
+
+                /*instancia
                     .destroy()
                     .then(() => {
                         res.status(204).json({ mensaje: "Registro eliminado" });
@@ -97,7 +144,7 @@ router.delete("/delete/:id", function (req, res, next) {
             }
         })
         .catch((error) => res.status(400).send(error));
-});
+});*/
 
 router.get("/findCardByTopic/:id/json", function (req, res, next) {
     let id = req.params.id;
