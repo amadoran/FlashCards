@@ -102,6 +102,19 @@ router.delete("/delete/:id", function (req, res, next) {
                                             });
                                         });
                                 })
+                            } else{
+                                instancia
+                                    .destroy()
+                                    .then(() => {
+                                        res.status(204).json({
+                                            mensaje: "Registro eliminado",
+                                        });
+                                    })
+                                    .catch((error) => {
+                                        res.status(500).json({
+                                            error: error,
+                                        });
+                                    });
                             }
                         }
                     });
@@ -116,16 +129,17 @@ router.delete("/delete/:id", function (req, res, next) {
 
 function deleteForeigns(resultado){
     return new Promise((resolve, reject) => {
+        promisesArr = []
         for (let registro of resultado) {
-            registro.destroy().then(() => {
+            promisesArr.push(registro.destroy().then(() => {
                 flashcard.destroy({
                     where: {
                         id: registro.flashcard_id,
                     },
                 });
-            });
+            }))
         }
-        resolve()
+        Promise.all(promisesArr).then(() => resolve())
     });
 }
 
