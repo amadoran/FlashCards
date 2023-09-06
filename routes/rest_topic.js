@@ -88,31 +88,20 @@ router.delete("/delete/:id", function (req, res, next) {
                     .then((resultado) => {
                         if (resultado) {
                             if (resultado.length > 0) {
-                                for (let registro of resultado) {
-                                    registro.destroy().then(() => {
-                                        flashcard
-                                            .destroy({
-                                                where: {
-                                                    id: registro.flashcard_id,
-                                                },
-                                            })
-                                            .then(() =>
-                                                instancia
-                                                    .destroy()
-                                                    .then(() => {
-                                                        res.status(204).json({
-                                                            mensaje:
-                                                                "Registro eliminado",
-                                                        });
-                                                    })
-                                                    .catch((error) => {
-                                                        res.status(500).json({
-                                                            error: error,
-                                                        });
-                                                    })
-                                            );
-                                    });
-                                }
+                                deleteForeigns(resultado).then(() => {
+                                    instancia
+                                        .destroy()
+                                        .then(() => {
+                                            res.status(204).json({
+                                                mensaje: "Registro eliminado",
+                                            });
+                                        })
+                                        .catch((error) => {
+                                            res.status(500).json({
+                                                error: error,
+                                            });
+                                        });
+                                })
                             }
                         }
                     });
@@ -124,5 +113,20 @@ router.delete("/delete/:id", function (req, res, next) {
         })
         .catch((error) => res.status(400).send(error));
 });
+
+function deleteForeigns(resultado){
+    return new Promise((resolve, reject) => {
+        for (let registro of resultado) {
+            registro.destroy().then(() => {
+                flashcard.destroy({
+                    where: {
+                        id: registro.flashcard_id,
+                    },
+                });
+            });
+        }
+        resolve()
+    });
+}
 
 module.exports = router;
