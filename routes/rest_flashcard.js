@@ -145,6 +145,18 @@ router.delete("/delete/:id", function (req, res, next) {
         })
         .catch((error) => res.status(400).send(error));
 });*/
+function deleteForeigns(resultado){
+    return new Promise((resolve, reject) => {
+        promisesArr = []
+        for (let registro of resultado) {
+            promisesArr.push(registro.destroy())
+        }
+        Promise.all(promisesArr).then(() => resolve())
+    });
+}
+
+
+
 
 router.get("/findCardByTopic/:id/json", function (req, res, next) {
     let id = req.params.id;
